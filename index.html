@@ -446,7 +446,7 @@
         }
     });
 
-   // URLパラメータ取得
+// URLパラメータ取得
 function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(param);
@@ -458,10 +458,6 @@ const selectedId = getQueryParam("id");
 if (selectedId) {
     const actress = actressData.find(a => a.id == selectedId);
     if (actress) {
-        renderCards([actress]);if (selectedId) {
-    const actress = actressData.find(a => a.id == selectedId);
-    if (actress) {
-
         // SEOタイトル変更
         document.title = actress.name + "｜AV女優プロフィール";
 
@@ -489,11 +485,7 @@ if (selectedId) {
         `;
     }
 } else {
-    renderCards(actressData);
-}
-
-    }
-} else {
+    // 一覧ページ表示
     renderCards(actressData);
 }
 
