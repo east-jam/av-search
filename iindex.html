@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actress Search Database</title>
+    <style>
+        :root {
+            --primary-color: #e91e63;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #333;
+            --text-sub: #666;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+
+        /* 検索フィルターエリア */
+        .search-panel {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .range-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .range-group input {
+            width: 100%;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .checkbox-label input {
+            margin-right: 5px;
+        }
+
+        /* 検索結果エリア */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            background-color: #eee;
+        }
+
+        .card-content {
+            padding: 15px;
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            color: var(--text-main);
+        }
+
+        .card-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            background-color: #eee;
+            color: var(--text-sub);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .card-info {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .card-info li {
+            list-style: none;
+        }
+
+        .btn-link {
+            display: block;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: auto; /* ボタンを最下部に配置 */
+        }
+
+        .btn-link:hover {
+            background-color: #c2185b;
+        }
+        
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+            color: var(--text-sub);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Actress Search</h1>
+
+    <div class="search-panel">
+        <div class="form-group">
+            <label>名前 (部分一致)</label>
+            <input type="text" id="filterName" placeholder="例: 山田">
+        </div>
+
+        <div class="form-group">
+            <label>年齢 (範囲)</label>
+            <div class="range-group">
+                <input type="number" id="filterAgeMin" placeholder="Min">
+                <span>〜</span>
+                <input type="number" id="filterAgeMax" placeholder="Max">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>身長 (cm)</label>
+            <div class="range-group">
+                <input type="number" id="filterHeightMin" placeholder="Min">
+                <span>〜</span>
+                <input type="number" id="filterHeightMax" placeholder="Max">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>カップサイズ</label>
+            <select id="filterCup">
+                <option value="">指定なし</option>
+                <option value="A">Aカップ</option>
+                <option value="B">Bカップ</option>
+                <option value="C">Cカップ</option>
+                <option value="D">Dカップ</option>
+                <option value="E">Eカップ</option>
+                <option value="F">Fカップ</option>
+                <option value="G">Gカップ</option>
+                <option value="H">Hカップ</option>
+                <option value="I">Iカップ</option>
+                <option value="J">Jカップ〜</option>
+            </select>
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <label>ジャンル (複数選択可)</label>
+            <div class="checkbox-group" id="genreContainer">
+                </div>
+        </div>
+    </div>
+
+    <div class="results-grid" id="resultsContainer">
+        </div>
+</div>
+
+<script>
+    /**
+     * データ定義 (JSON形式)
+     * ※ imageURLはダミー画像サービスを使用しています。実運用の際は正しいURLに書き換えてください。
+     */
+    const actressData = [
+        {
+            "id": 1,
+            "name": "山田 花子",
+            "age": 22,
+            "cup": "D",
+            "bust": 85,
+            "waist": 58,
+            "hip": 86,
+            "height": 162,
+            "genre": ["美少女", "ドラマ", "OL"],
+            "imageURL": "https://placehold.co/400x500?text=Hanako+Yamada",
+            "fanzaURL": "https://www.dmm.co.jp/"
+        },
+        {
+            "id": 2,
+            "name": "田中 美咲",
+            "age": 28,
+            "cup": "F",
+            "bust": 92,
+            "waist": 60,
+            "hip": 88,
+            "height": 165,
+            "genre": ["人妻", "巨乳", "熟女"],
+            "imageURL": "https://placehold.co/400x500?text=Misaki+Tanaka",
+            "fanzaURL": "https://www.dmm.co.jp/"
+        },
+        {
+            "id": 3,
+            "name": "佐藤 玲奈",
+            "age": 20,
+            "cup": "C",
+            "bust": 82,
+            "waist": 56,
+            "hip": 84,
+            "height": 155,
+            "genre": ["美少女", "アイドル", "制服"],
+            "imageURL": "https://placehold.co/400x500?text=Rena+Sato",
+            "fanzaURL": "https://www.dmm.co.jp/"
+        },
+        {
+            "id": 4,
+            "name": "鈴木 裕子",
+            "age": 35,
+            "cup": "G",
+            "bust": 98,
+            "waist": 62,
+            "hip": 90,
+            "height": 168,
+            "genre": ["熟女", "巨乳", "義母"],
+            "imageURL": "https://placehold.co/400x500?text=Yuko+Suzuki",
+            "fanzaURL": "https://www.dmm.co.jp/"
+        },
+        {
+            "id": 5,
+            "name": "高橋 エリカ",
+            "age": 24,
+            "cup": "E",
+            "bust": 88,
+            "waist": 59,
+            "hip": 87,
+            "height": 170,
+            "genre": ["ギャル", "高身長", "モデル"],
+            "imageURL": "https://placehold.co/400x500?text=Erika+Takahashi",
+            "fanzaURL": "https://www.dmm.co.jp/"
+        }
+    ];
+
+    // 全ジャンルを抽出（重複排除）してチェックボックスを生成
+    const allGenres = [...new Set(actressData.flatMap(d => d.genre))];
+    const genreContainer = document.getElementById('genreContainer');
+    
+    allGenres.forEach(genre => {
+        const label = document.createElement('label');
+        label.className = 'checkbox-label';
+        label.innerHTML = `<input type="checkbox" value="${genre}" class="filter-genre"> ${genre}`;
+        genreContainer.appendChild(label);
+    });
+
+    // DOM要素の取得
+    const resultsContainer = document.getElementById('resultsContainer');
+    const inputs = {
+        name: document.getElementById('filterName'),
+        ageMin: document.getElementById('filterAgeMin'),
+        ageMax: document.getElementById('filterAgeMax'),
+        heightMin: document.getElementById('filterHeightMin'),
+        heightMax: document.getElementById('filterHeightMax'),
+        cup: document.getElementById('filterCup'),
+        genres: document.getElementsByClassName('filter-genre')
+    };
+
+    /**
+     * カードのレンダリング関数
+     */
+    function renderCards(data) {
+        resultsContainer.innerHTML = '';
+
+        if (data.length === 0) {
+            resultsContainer.innerHTML = '<div class="no-results">条件に一致する女優は見つかりませんでした。</div>';
+            return;
+        }
+
+        data.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const genreBadges = item.genre.map(g => `<span class="badge">${g}</span>`).join('');
+
+            card.innerHTML = `
+                <img src="${item.imageURL}" alt="${item.name}" class="card-image" loading="lazy">
+                <div class="card-content">
+                    <h2 class="card-title">${item.name}</h2>
+                    <div class="card-badges">${genreBadges}</div>
+                    <ul class="card-info">
+                        <li><strong>年齢:</strong> ${item.age}歳</li>
+                        <li><strong>サイズ:</strong> T${item.height} / B${item.bust}(${item.cup}) W${item.waist} H${item.hip}</li>
+                    </ul>
+                    <a href="${item.fanzaURL}" target="_blank" rel="noopener noreferrer" class="btn-link">FANZAで見る</a>
+                </div>
+            `;
+            resultsContainer.appendChild(card);
+        });
+    }
+
+    /**
+     * フィルタリング関数
+     */
+    function filterData() {
+        const nameVal = inputs.name.value.toLowerCase().trim();
+        const ageMinVal = parseInt(inputs.ageMin.value) || 0;
+        const ageMaxVal = parseInt(inputs.ageMax.value) || 100;
+        const heightMinVal = parseInt(inputs.heightMin.value) || 0;
+        const heightMaxVal = parseInt(inputs.heightMax.value) || 300;
+        const cupVal = inputs.cup.value;
+        
+        // 選択されたジャンルを取得
+        const selectedGenres = Array.from(inputs.genres)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+
+        const filtered = actressData.filter(item => {
+            // 名前検索（部分一致）
+            if (nameVal && !item.name.toLowerCase().includes(nameVal)) return false;
+
+            // 年齢範囲
+            if (item.age < ageMinVal || item.age > ageMaxVal) return false;
+
+            // 身長範囲
+            if (item.height < heightMinVal || item.height > heightMaxVal) return false;
+
+            // カップサイズ（選択時のみ判定、J以上の処理含む）
+            if (cupVal) {
+                if (cupVal === 'J') {
+                    // Jカップ以上（J, K, L...）の簡易判定ロジック
+                    if (item.cup < 'J') return false; 
+                } else {
+                    if (item.cup !== cupVal) return false;
+                }
+            }
+
+            // ジャンル（選択されたものが1つでも含まれていればOK：OR検索）
+            // 全て含まれる必要がある場合（AND検索）は .some を .every に変更してください
+            if (selectedGenres.length > 0) {
+                const hasGenre = selectedGenres.some(g => item.genre.includes(g));
+                if (!hasGenre) return false;
+            }
+
+            return true;
+        });
+
+        renderCards(filtered);
+    }
+
+    // イベントリスナーの設定（入力時に即時検索）
+    Object.values(inputs).forEach(input => {
+        if (input instanceof HTMLCollection) {
+            Array.from(input).forEach(cb => cb.addEventListener('change', filterData));
+        } else {
+            input.addEventListener('input', filterData);
+            input.addEventListener('change', filterData);
+        }
+    });
+
+    // 初回レンダリング
+    renderCards(actressData);
+
+</script>
+
+</body>
+</html>
