@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AV女優検索データベース｜高機能版</title>
+    <title>AV女優検索データベース｜拡張版</title>
     <meta name="description" content="AV女優を年齢・カップサイズ・身長・ジャンルで絞り込み検索できる総合データベース。">
 
     <style>
@@ -70,7 +70,6 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-top: 15px;
-            /* 初期表示設定（スマホなど必要に応じて開閉させる場合はJSで制御） */
         }
 
         .form-group {
@@ -441,6 +440,7 @@
         <select id="sortSelect" class="sort-select">
             <option value="default">並び替え</option>
             <option value="age_asc">年齢が若い順</option>
+            <option value="age_desc">年齢が高い順</option>
             <option value="height_desc">身長が高い順</option>
             <option value="height_asc">身長が低い順</option>
             <option value="bust_desc">バストが大きい順</option>
@@ -451,23 +451,50 @@
 </div>
 
 <script>
-    // データを補完・拡充しました（※数値はダミー含む、変動の可能性あり）
+    // ※画像URLはプレースホルダーを使用しています。実際のURLに差し替えることも可能です。
+    // ※年齢は2026年時点の推定年齢です。
     const actressData = [
+        // === 既存のデータ ===
         { id: 10, name: "河北 彩伽", age: 26, cup: "E", bust: 88, waist: 57, hip: 88, height: 169, genre: ["人気", "美少女", "モデル"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Saika+K" },
-        { id: 11, name: "三上 悠亜", age: 30, cup: "F", bust: 84, waist: 58, hip: 88, height: 159, genre: ["人気", "アイドル", "S1"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Yua+M" },
-        { id: 1, name: "美園 和花", age: 24, cup: "G", bust: 95, waist: 59, hip: 92, height: 154, genre: ["人気", "ぽっちゃり"], imageURL: "https://placehold.co/400x500?text=Waka+M" },
-        { id: 3, name: "松本 いちか", age: 23, cup: "C", bust: 82, waist: 55, hip: 84, height: 153, genre: ["人気", "ロリ", "貧乳"], imageURL: "https://placehold.co/400x500?text=Ichika+M" },
-        { id: 12, name: "小倉 由菜", age: 25, cup: "D", bust: 83, waist: 58, hip: 86, height: 155, genre: ["人気", "美少女"], imageURL: "https://placehold.co/400x500?text=Yuna+O" },
-        { id: 13, name: "七沢 みあ", age: 25, cup: "C", bust: 80, waist: 54, hip: 82, height: 145, genre: ["ロリ", "低身長"], imageURL: "https://placehold.co/400x500?text=Mia+N" },
-        { id: 14, name: "本郷 愛", age: 24, cup: "D", bust: 85, waist: 56, hip: 86, height: 158, genre: ["人気", "ハーフ"], imageURL: "https://placehold.co/400x500?text=Ai+H" },
-        { id: 15, name: "伊藤 舞雪", age: 26, cup: "H", bust: 96, waist: 62, hip: 94, height: 162, genre: ["巨乳", "熟女"], imageURL: "https://placehold.co/400x500?text=Mayuki+I" },
-        { id: 16, name: "石川 澪", age: 21, cup: "D", bust: 84, waist: 55, hip: 85, height: 153, genre: ["人気", "美少女"], imageURL: "https://placehold.co/400x500?text=Mio+I" },
-        { id: 17, name: "未歩 なな", age: 24, cup: "F", bust: 88, waist: 58, hip: 87, height: 163, genre: ["美脚", "スレンダー"], imageURL: "https://placehold.co/400x500?text=Nana+M" },
-        { id: 18, name: "安齋 らら", age: 29, cup: "J", bust: 105, waist: 60, hip: 92, height: 161, genre: ["巨乳", "神乳"], imageURL: "https://placehold.co/400x500?text=Rara+A" },
-        { id: 19, name: "山手 梨愛", age: 23, cup: "G", bust: 92, waist: 59, hip: 90, height: 150, genre: ["巨乳", "低身長"], imageURL: "https://placehold.co/400x500?text=Ria+Y" },
-        { id: 2, name: "瀬戸 環奈", age: 25, cup: "E", bust: 86, waist: 58, hip: 86, height: 164, genre: ["人気", "OL"], imageURL: "https://placehold.co/400x500?text=Kanna+S" },
-        { id: 6, name: "木下 ひまり", age: 26, cup: "H", bust: 98, waist: 62, hip: 96, height: 155, genre: ["巨乳", "お姉さん"], imageURL: "https://placehold.co/400x500?text=Himari+K" },
-        { id: 8, name: "乙 アリス", age: 23, cup: "F", bust: 89, waist: 59, hip: 88, height: 167, genre: ["ハーフ", "高身長"], imageURL: "https://placehold.co/400x500?text=Alice+O" }
+        { id: 11, name: "三上 悠亜", age: 32, cup: "F", bust: 84, waist: 58, hip: 88, height: 159, genre: ["人気", "アイドル"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Yua+M" },
+        { id: 12, name: "小倉 由菜", age: 27, cup: "D", bust: 83, waist: 58, hip: 86, height: 155, genre: ["人気", "美少女"], imageURL: "https://placehold.co/400x500?text=Yuna+O" },
+        { id: 14, name: "本郷 愛", age: 26, cup: "D", bust: 85, waist: 56, hip: 86, height: 158, genre: ["人気", "ハーフ"], imageURL: "https://placehold.co/400x500?text=Ai+H" },
+        { id: 15, name: "伊藤 舞雪", age: 28, cup: "H", bust: 96, waist: 62, hip: 94, height: 162, genre: ["巨乳", "熟女"], imageURL: "https://placehold.co/400x500?text=Mayuki+I" },
+        { id: 16, name: "石川 澪", age: 23, cup: "D", bust: 84, waist: 55, hip: 85, height: 153, genre: ["人気", "美少女"], imageURL: "https://placehold.co/400x500?text=Mio+I" },
+        { id: 17, name: "未歩 なな", age: 26, cup: "F", bust: 88, waist: 58, hip: 87, height: 163, genre: ["美脚", "スレンダー"], imageURL: "https://placehold.co/400x500?text=Nana+M" },
+        { id: 18, name: "安齋 らら", age: 31, cup: "J", bust: 105, waist: 60, hip: 92, height: 161, genre: ["巨乳", "神乳"], imageURL: "https://placehold.co/400x500?text=Rara+A" },
+        { id: 19, name: "山手 梨愛", age: 25, cup: "G", bust: 92, waist: 59, hip: 90, height: 150, genre: ["巨乳", "低身長"], imageURL: "https://placehold.co/400x500?text=Ria+Y" },
+
+        // === 新規追加データ ===
+        { id: 20, name: "森 日向子", age: 30, cup: "G", bust: 95, waist: 61, hip: 88, height: 156, genre: ["巨乳", "ぽっちゃり"], imageURL: "https://placehold.co/400x500?text=Hinako+M" },
+        { id: 21, name: "柏木 こなつ", age: 27, cup: "G", bust: 88, waist: 58, hip: 88, height: 145, genre: ["巨乳", "低身長"], imageURL: "https://placehold.co/400x500?text=Konatsu+K" },
+        { id: 22, name: "倉本 すみれ", age: 28, cup: "E", bust: 88, waist: 58, hip: 85, height: 154, genre: ["人気", "美少女"], imageURL: "https://placehold.co/400x500?text=Sumire+K" },
+        { id: 23, name: "波多野 結衣", age: 38, cup: "E", bust: 88, waist: 59, hip: 85, height: 163, genre: ["熟女", "美脚", "人気"], imageURL: "https://placehold.co/400x500?text=Yui+H" },
+        { id: 24, name: "北野 未奈", age: 26, cup: "E", bust: 86, waist: 57, hip: 88, height: 164, genre: ["モデル", "美脚"], imageURL: "https://placehold.co/400x500?text=Mina+K" },
+        { id: 25, name: "新井 リマ", age: 27, cup: "E", bust: 85, waist: 55, hip: 84, height: 161, genre: ["スレンダー", "美脚"], imageURL: "https://placehold.co/400x500?text=Rima+A" },
+        { id: 26, name: "皆月 ひかる", age: 27, cup: "D", bust: 85, waist: 56, hip: 86, height: 162, genre: ["スレンダー", "美脚"], imageURL: "https://placehold.co/400x500?text=Hikaru+M" },
+        { id: 27, name: "天馬 ゆい", age: 27, cup: "F", bust: 88, waist: 58, hip: 86, height: 158, genre: ["巨乳", "美少女"], imageURL: "https://placehold.co/400x500?text=Yui+T" },
+        { id: 28, name: "森沢 かな", age: 34, cup: "F", bust: 90, waist: 58, hip: 87, height: 163, genre: ["熟女", "美人", "巨乳"], imageURL: "https://placehold.co/400x500?text=Kana+M" },
+        { id: 29, name: "浅野 こころ", age: 26, cup: "F", bust: 88, waist: 57, hip: 85, height: 154, genre: ["ロリ", "巨乳"], imageURL: "https://placehold.co/400x500?text=Kokoro+A" },
+        { id: 30, name: "篠田 ゆう", age: 35, cup: "E", bust: 85, waist: 56, hip: 85, height: 155, genre: ["ギャル", "スレンダー"], imageURL: "https://placehold.co/400x500?text=Yu+S" },
+        { id: 31, name: "東條 なつ", age: 27, cup: "H", bust: 96, waist: 62, hip: 92, height: 166, genre: ["巨乳", "高身長", "ギャル"], imageURL: "https://placehold.co/400x500?text=Natsu+T" },
+        { id: 32, name: "大槻 ひびき", age: 38, cup: "D", bust: 88, waist: 57, hip: 85, height: 162, genre: ["熟女", "人気"], imageURL: "https://placehold.co/400x500?text=Hibiki+O" },
+        { id: 33, name: "新村 あかり", age: 31, cup: "H", bust: 95, waist: 60, hip: 90, height: 160, genre: ["巨乳", "熟女"], imageURL: "https://placehold.co/400x500?text=Akari+N" },
+        { id: 34, name: "美谷 朱音", age: 29, cup: "E", bust: 87, waist: 59, hip: 89, height: 166, genre: ["高身長", "美人"], imageURL: "https://placehold.co/400x500?text=Akane+M" },
+        { id: 35, name: "渚 みつき", age: 29, cup: "C", bust: 83, waist: 56, hip: 83, height: 156, genre: ["美少女", "スレンダー"], imageURL: "https://placehold.co/400x500?text=Mitsuki+N" },
+        { id: 36, name: "姫咲 はな", age: 28, cup: "D", bust: 83, waist: 56, hip: 84, height: 153, genre: ["美少女", "低身長"], imageURL: "https://placehold.co/400x500?text=Hana+H" },
+        { id: 37, name: "月野 かすみ", age: 30, cup: "G", bust: 94, waist: 60, hip: 89, height: 158, genre: ["巨乳", "お姉さん"], imageURL: "https://placehold.co/400x500?text=Kasumi+T" },
+        { id: 38, name: "石原 希望", age: 28, cup: "E", bust: 88, waist: 58, hip: 89, height: 161, genre: ["人気", "笑顔"], imageURL: "https://placehold.co/400x500?text=Nozomi+I" },
+        { id: 39, name: "小日向 みゆう", age: 31, cup: "I", bust: 96, waist: 62, hip: 92, height: 152, genre: ["巨乳", "低身長"], imageURL: "https://placehold.co/400x500?text=Miyuu+K" },
+        { id: 40, name: "椿 りか", age: 27, cup: "F", bust: 88, waist: 60, hip: 89, height: 165, genre: ["モデル", "高身長"], imageURL: "https://placehold.co/400x500?text=Rika+T" },
+        { id: 41, name: "美咲 かんな", age: 29, cup: "C", bust: 82, waist: 57, hip: 83, height: 152, genre: ["美少女", "低身長"], imageURL: "https://placehold.co/400x500?text=Kanna+M" },
+        { id: 42, name: "尾崎 えりか", age: 29, cup: "D", bust: 85, waist: 59, hip: 88, height: 163, genre: ["スレンダー", "お姉さん"], imageURL: "https://placehold.co/400x500?text=Erika+O" },
+        { id: 43, name: "宍戸 里帆", age: 33, cup: "I", bust: 98, waist: 61, hip: 88, height: 155, genre: ["巨乳", "神乳"], imageURL: "https://placehold.co/400x500?text=Riho+S" },
+        { id: 44, name: "楪 カレン", age: 30, cup: "F", bust: 90, waist: 60, hip: 91, height: 168, genre: ["高身長", "モデル"], imageURL: "https://placehold.co/400x500?text=Karen+Y" },
+        { id: 45, name: "うんぱい", age: 30, cup: "G", bust: 92, waist: 62, hip: 90, height: 160, genre: ["巨乳", "インフルエンサー"], imageURL: "https://placehold.co/400x500?text=Unpai" },
+        { id: 46, name: "藤森 里穂", age: 28, cup: "E", bust: 86, waist: 58, hip: 87, height: 160, genre: ["美少女", "人気"], imageURL: "https://placehold.co/400x500?text=Riho+F" },
+        { id: 47, name: "吉根 ゆりあ", age: 30, cup: "G", bust: 92, waist: 60, hip: 88, height: 161, genre: ["巨乳", "美人"], imageURL: "https://placehold.co/400x500?text=Yuria+Y" },
+        { id: 48, name: "羽月 乃蒼", age: 28, cup: "C", bust: 84, waist: 58, hip: 86, height: 158, genre: ["美少女", "スレンダー"], imageURL: "https://placehold.co/400x500?text=Noa+H" }
     ];
 
     // --- 初期化処理 ---
@@ -500,7 +527,7 @@
     // --- フィルタリング & レンダリング ---
     function filterAndRender() {
         // 値の取得
-        const nameVal = inputs.name.value.toLowerCase().trim();
+        const nameVal = inputs.name.value.toLowerCase().trim().replace(/\s+/g, ""); // スペース除去して検索
         const ageMin = parseInt(inputs.ageMin.value) || 0;
         const ageMax = parseInt(inputs.ageMax.value) || 100;
         const heightMin = parseInt(inputs.heightMin.value) || 0;
@@ -516,7 +543,10 @@
 
         // フィルタ処理
         let filtered = actressData.filter(item => {
-            if (nameVal && !item.name.toLowerCase().includes(nameVal)) return false;
+            // 名前検索（スペースを詰めて照合）
+            const normalizeName = item.name.toLowerCase().replace(/\s+/g, "");
+            if (nameVal && !normalizeName.includes(nameVal)) return false;
+
             if (item.age < ageMin || item.age > ageMax) return false;
             if (item.height < heightMin || item.height > heightMax) return false;
             
@@ -549,6 +579,7 @@
             filtered.sort((a, b) => {
                 switch(sortMode) {
                     case 'age_asc': return a.age - b.age;
+                    case 'age_desc': return b.age - a.age;
                     case 'height_desc': return b.height - a.height;
                     case 'height_asc': return a.height - b.height;
                     case 'bust_desc': return (b.bust || 0) - (a.bust || 0);
@@ -599,7 +630,7 @@
                     </div>
                 </a>
                 <div style="padding:0 15px 15px 15px;">
-                    <a href="https://www.dmm.co.jp/search/=/searchstr=${encodeURIComponent(item.name)}/" target="_blank" class="btn-link">FANZAで探す</a>
+                    <a href="https://www.dmm.co.jp/search/=/searchstr=${encodeURIComponent(item.name.replace(/\s+/g,""))}/" target="_blank" class="btn-link">FANZAで探す</a>
                 </div>
             `;
             resultsContainer.appendChild(card);
@@ -634,8 +665,6 @@
         }
     };
     
-    // 初期ロード時の開閉状態（PCは開く、スマホは閉じるなど調整可能。今回はデフォルトCSSに従う）
-    
     // --- 詳細ページ（SPA風） ---
     const urlParams = new URLSearchParams(window.location.search);
     const detailId = urlParams.get('id');
@@ -663,7 +692,7 @@
                                 <tr><th>ヒップ</th><td>${target.hip} cm</td></tr>
                             </table>
 
-                            <a href="https://www.dmm.co.jp/search/=/searchstr=${encodeURIComponent(target.name)}/" target="_blank" class="btn-link">
+                            <a href="https://www.dmm.co.jp/search/=/searchstr=${encodeURIComponent(target.name.replace(/\s+/g,""))}/" target="_blank" class="btn-link">
                                 FANZAで作品を見る
                             </a>
                         </div>
