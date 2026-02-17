@@ -254,10 +254,6 @@
 </div>
 
 <script>
-    /**
-     * データ定義 (JSON形式)
-     * ※ imageURLはダミー画像サービスを使用しています。実運用の際は正しいURLに書き換えてください。
-     */
     const actressData = [
         const actressData = [
     {
@@ -300,8 +296,6 @@
         "fanzaURL": "https://www.dmm.co.jp/digital/videoa/-/list/=/article=actress/id=1003/"
     }
 ];
-
-
     // 全ジャンルを抽出（重複排除）してチェックボックスを生成
     const allGenres = [...new Set(actressData.flatMap(d => d.genre))];
     const genreContainer = document.getElementById('genreContainer');
