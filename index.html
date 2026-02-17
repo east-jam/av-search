@@ -446,8 +446,23 @@
         }
     });
 
-    // 初回レンダリング
+   // URLパラメータ取得
+function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+}
+
+// 初期表示制御
+const selectedId = getQueryParam("id");
+
+if (selectedId) {
+    const actress = actressData.find(a => a.id == selectedId);
+    if (actress) {
+        renderCards([actress]);
+    }
+} else {
     renderCards(actressData);
+}
 
 </script>
 
