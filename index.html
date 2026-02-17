@@ -259,72 +259,48 @@
      * ※ imageURLはダミー画像サービスを使用しています。実運用の際は正しいURLに書き換えてください。
      */
     const actressData = [
-        {
-            "id": 1,
-            "name": "山田 花子",
-            "age": 22,
-            "cup": "D",
-            "bust": 85,
-            "waist": 58,
-            "hip": 86,
-            "height": 162,
-            "genre": ["美少女", "ドラマ", "OL"],
-            "imageURL": "https://placehold.co/400x500?text=Hanako+Yamada",
-            "fanzaURL": "https://www.dmm.co.jp/"
-        },
-        {
-            "id": 2,
-            "name": "田中 美咲",
-            "age": 28,
-            "cup": "F",
-            "bust": 92,
-            "waist": 60,
-            "hip": 88,
-            "height": 165,
-            "genre": ["人妻", "巨乳", "熟女"],
-            "imageURL": "https://placehold.co/400x500?text=Misaki+Tanaka",
-            "fanzaURL": "https://www.dmm.co.jp/"
-        },
-        {
-            "id": 3,
-            "name": "佐藤 玲奈",
-            "age": 20,
-            "cup": "C",
-            "bust": 82,
-            "waist": 56,
-            "hip": 84,
-            "height": 155,
-            "genre": ["美少女", "アイドル", "制服"],
-            "imageURL": "https://placehold.co/400x500?text=Rena+Sato",
-            "fanzaURL": "https://www.dmm.co.jp/"
-        },
-        {
-            "id": 4,
-            "name": "鈴木 裕子",
-            "age": 35,
-            "cup": "G",
-            "bust": 98,
-            "waist": 62,
-            "hip": 90,
-            "height": 168,
-            "genre": ["熟女", "巨乳", "義母"],
-            "imageURL": "https://placehold.co/400x500?text=Yuko+Suzuki",
-            "fanzaURL": "https://www.dmm.co.jp/"
-        },
-        {
-            "id": 5,
-            "name": "高橋 エリカ",
-            "age": 24,
-            "cup": "E",
-            "bust": 88,
-            "waist": 59,
-            "hip": 87,
-            "height": 170,
-            "genre": ["ギャル", "高身長", "モデル"],
-            "imageURL": "https://placehold.co/400x500?text=Erika+Takahashi",
-            "fanzaURL": "https://www.dmm.co.jp/"
-        }
-    ];
+        const actressData = [
+    {
+        "id": 1,
+        "name": "橋本 ありな",
+        "age": 25,
+        "cup": "D",
+        "bust": 85,
+        "waist": 57,
+        "hip": 86,
+        "height": 160,
+        "genre": ["美少女", "アイドル"],
+        "imageURL": "https://placehold.co/400x500?text=Arina+Hashimoto",
+        "fanzaURL": "https://www.dmm.co.jp/digital/videoa/-/list/=/article=actress/id=1001/"
+    },
+    {
+        "id": 2,
+        "name": "森咲 きらら",
+        "age": 28,
+        "cup": "E",
+        "bust": 90,
+        "waist": 58,
+        "hip": 88,
+        "height": 165,
+        "genre": ["ギャル", "巨乳"],
+        "imageURL": "https://placehold.co/400x500?text=Kirara+Morisaki",
+        "fanzaURL": "https://www.dmm.co.jp/digital/videoa/-/list/=/article=actress/id=1002/"
+    },
+    {
+        "id": 3,
+        "name": "三上 悠亜",
+        "age": 24,
+        "cup": "F",
+        "bust": 92,
+        "waist": 60,
+        "hip": 90,
+        "height": 158,
+        "genre": ["美少女", "アイドル"],
+        "imageURL": "https://placehold.co/400x500?text=Yua+Mikami",
+        "fanzaURL": "https://www.dmm.co.jp/digital/videoa/-/list/=/article=actress/id=1003/"
+    }
+];
+
 
     // 全ジャンルを抽出（重複排除）してチェックボックスを生成
     const allGenres = [...new Set(actressData.flatMap(d => d.genre))];
