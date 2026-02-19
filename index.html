@@ -334,243 +334,474 @@
         { id: 60, name: "奥田咲", age: 32, cup: "G", bust: 90, waist: 60, hip: 88, height: 155, genre: ["巨乳", "お姉さん"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." }
     ];
 
+ // ==========================================
+
+    // 非同期でDMM APIから女優画像を取得する関数（修正版）
+
     // ==========================================
-    // 非同期でDMM APIから女優画像を取得する関数
-    // ==========================================
+
     async function fetchActressImage(actressName, imgElement) {
-        // IDが未設定の場合は何もしない（プレースホルダーのまま）
-        if (API_ID === "Qr42BeY54EnU1EpnVWwb" || AFF_ID === "eastjam-001") {
+
+        // すでに取得済みの場合はキャッシュを利用
+
+        if (imageCache[actressName]) {
+
+            imgElement.src = imageCache[actressName];
+
             return;
+
         }
 
-        // 既に取得済みの画像があればキャッシュから返す（高速化）
-        if (imageCache[actressName]) {
-            imgElement.src = imageCache[actressName];
-            return;
-        }
+
 
         try {
-            // 女優検索APIのURLを作成
+
+            // 女優検索APIのURL
+
             const dmmApiUrl = `https://api.dmm.com/affiliate/v3/ActressSearch?api_id=${API_ID}&affiliate_id=${AFF_ID}&keyword=${encodeURIComponent(actressName)}&output=json`;
+
             
-            // CORSエラーを回避するための無料プロキシサーバーを経由させる
+
+            // CORS回避のためのプロキシ（※もしこれでもダメなら corsproxy.io に変えてみてください）
+
             const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(dmmApiUrl)}`;
 
+
+
             const response = await fetch(proxyUrl);
+
             const proxyData = await response.json();
+
             
-            // プロキシ経由で取得したJSONテキストを解析
+
             const data = JSON.parse(proxyData.contents);
 
-            // 該当する女優の画像が存在するかチェック
+
+
             if (data && data.result && data.result.actress && data.result.actress.length > 0) {
-                // 最も一致した女優（配列の0番目）の大きな画像URLを取得
+
                 const imageUrl = data.result.actress[0].imageURL ? data.result.actress[0].imageURL.large : null;
+
                 
+
                 if (imageUrl) {
-                    imageCache[actressName] = imageUrl; // キャッシュに保存
-                    imgElement.src = imageUrl;          // 画像を差し替え
+
+                    imageCache[actressName] = imageUrl;
+
+                    imgElement.src = imageUrl;
+
+                    // 画像の読み込み失敗時に備えた処理（任意）
+
+                    imgElement.onerror = () => { imgElement.src = "https://placehold.co/400x500?text=No+Image"; };
+
                 }
+
+            } else {
+
+                // 女優が見つからない場合はダミー画像
+
+                imgElement.src = "https://placehold.co/400x500?text=Not+Found";
+
             }
+
         } catch (error) {
-            console.error(`${actressName} の画像取得に失敗しました:`, error);
+
+            console.error(`${actressName} の画像取得エラー:`, error);
+
         }
+
     }
 
     // --- 初期化処理 ---
+
     const resultsContainer = document.getElementById('resultsContainer');
+
     const countDisplay = document.getElementById('countDisplay');
+
     const genreContainer = document.getElementById('genreContainer');
+
     
+
     // ジャンル生成
+
     const allGenres = [...new Set(actressData.flatMap(d => d.genre))].sort();
+
     allGenres.forEach(genre => {
+
         const label = document.createElement('label');
+
         label.className = 'checkbox-label';
+
         label.innerHTML = `<input type="checkbox" value="${genre}" class="filter-genre"> ${genre}`;
+
         genreContainer.appendChild(label);
+
     });
+
+
 
     const inputs = {
+
         name: document.getElementById('filterName'),
+
         ageMin: document.getElementById('filterAgeMin'), ageMax: document.getElementById('filterAgeMax'),
+
         heightMin: document.getElementById('filterHeightMin'), heightMax: document.getElementById('filterHeightMax'),
+
         cup: document.getElementById('filterCup'),
+
         bustMin: document.getElementById('filterBustMin'), bustMax: document.getElementById('filterBustMax'),
+
         waistMin: document.getElementById('filterWaistMin'), waistMax: document.getElementById('filterWaistMax'),
+
         hipMin: document.getElementById('filterHipMin'), hipMax: document.getElementById('filterHipMax'),
+
         sort: document.getElementById('sortSelect')
+
     };
+
     const genreInputs = document.getElementsByClassName('filter-genre');
 
+
+
     // --- フィルタリング & レンダリング ---
+
     function filterAndRender() {
+
         const nameVal = inputs.name.value.toLowerCase().trim().replace(/\s+/g, "");
+
         const ageMin = parseInt(inputs.ageMin.value) || 0;
+
         const ageMax = parseInt(inputs.ageMax.value) || 100;
+
         const heightMin = parseInt(inputs.heightMin.value) || 0;
+
         const heightMax = parseInt(inputs.heightMax.value) || 300;
+
         const cupVal = inputs.cup.value;
+
         const bustMin = parseInt(inputs.bustMin.value) || 0;
+
         const bustMax = parseInt(inputs.bustMax.value) || 200;
+
         const waistMin = parseInt(inputs.waistMin.value) || 0;
+
         const waistMax = parseInt(inputs.waistMax.value) || 200;
+
         const hipMin = parseInt(inputs.hipMin.value) || 0;
+
         const hipMax = parseInt(inputs.hipMax.value) || 200;
+
         const selectedGenres = Array.from(genreInputs).filter(cb => cb.checked).map(cb => cb.value);
 
+
+
         let filtered = actressData.filter(item => {
+
             const normalizeName = item.name.toLowerCase().replace(/\s+/g, "");
+
             if (nameVal && !normalizeName.includes(nameVal)) return false;
+
             if (item.age < ageMin || item.age > ageMax) return false;
+
             if (item.height < heightMin || item.height > heightMax) return false;
+
             if (item.bust && (item.bust < bustMin || item.bust > bustMax)) return false;
+
             if (item.waist && (item.waist < waistMin || item.waist > waistMax)) return false;
+
             if (item.hip && (item.hip < hipMin || item.hip > hipMax)) return false;
 
+
+
             if (cupVal) {
+
                 if (cupVal === 'J') {
+
                     if (item.cup < 'J') return false;
+
                 } else {
+
                     if (item.cup !== cupVal) return false;
+
                 }
+
             }
+
+
 
             if (selectedGenres.length > 0) {
+
                 if (!selectedGenres.some(g => item.genre.includes(g))) return false;
+
             }
+
             return true;
+
         });
+
+
 
         const sortMode = inputs.sort.value;
+
         if (sortMode !== 'default') {
+
             filtered.sort((a, b) => {
+
                 switch(sortMode) {
+
                     case 'age_asc': return a.age - b.age;
+
                     case 'age_desc': return b.age - a.age;
+
                     case 'height_desc': return b.height - a.height;
+
                     case 'height_asc': return a.height - b.height;
+
                     case 'bust_desc': return (b.bust || 0) - (a.bust || 0);
+
                     default: return 0;
+
                 }
+
             });
+
         }
+
+
 
         renderGrid(filtered);
+
     }
+
+
 
     function renderGrid(data) {
+
         resultsContainer.innerHTML = '';
+
         countDisplay.textContent = data.length;
 
+
+
         if (data.length === 0) {
+
             resultsContainer.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#888;">条件に一致する女優は見つかりませんでした。</div>';
+
             return;
+
         }
+
+
 
         data.forEach(item => {
+
             const card = document.createElement('div');
+
             card.className = 'card';
+
             const tags = item.genre.map(g => `<span class="tag">${g}</span>`).join('');
+
             const cupBadge = item.cup ? `<div class="cup-badge">${item.cup}</div>` : '';
 
+
+
             // アフィリエイトURLの生成（直接検索結果一覧へ飛ばす）
+
             const searchUrl = `https://www.dmm.co.jp/digital/videoa/-/list/=/searchstr=${item.name.replace(/\s+/g,"")}`;
+
             const affiliateLink = `https://al.dmm.co.jp/?lurl=${encodeURIComponent(searchUrl)}&af_id=${AFF_ID}`;
+
+
 
             card.innerHTML = `
+
                 <a href="?id=${item.id}" style="text-decoration:none; color:inherit;">
+
                     <div class="card-image-wrapper">
+
                         ${cupBadge}
+
                         <img src="${item.imageURL}" alt="${item.name}" class="card-image" id="img-${item.id}" loading="lazy">
+
                     </div>
+
                     <div class="card-content">
+
                         <h2 class="card-title">${item.name}</h2>
+
                         <div class="card-meta">${item.age}歳 / T${item.height}cm</div>
+
                         <div class="stats-grid">
+
                             <div class="stats-item">B: <strong>${item.bust || '-'}</strong></div>
+
                             <div class="stats-item">W: <strong>${item.waist || '-'}</strong></div>
+
                             <div class="stats-item">H: <strong>${item.hip || '-'}</strong></div>
+
                             <div class="stats-item">Cup: <strong>${item.cup || '-'}</strong></div>
+
                         </div>
+
                         <div class="tag-container">${tags}</div>
+
                     </div>
+
                 </a>
+
                 <div style="padding:0 15px 15px 15px;">
+
                     <a href="${affiliateLink}" target="_blank" class="btn-link">FANZAで探す</a>
+
                 </div>
+
             `;
+
             resultsContainer.appendChild(card);
 
+
+
             // APIを叩いて本物の画像を取得し、<img>のsrcを差し替える（非同期処理）
+
             const imgElement = card.querySelector(`#img-${item.id}`);
+
             fetchActressImage(item.name, imgElement);
+
         });
+
     }
+
+
 
     Object.values(inputs).forEach(input => {
+
         input.addEventListener('input', filterAndRender);
+
         input.addEventListener('change', filterAndRender);
+
     });
+
     Array.from(genreInputs).forEach(cb => cb.addEventListener('change', filterAndRender));
 
+
+
     window.resetFilters = function() {
+
         document.querySelectorAll('input').forEach(i => {
+
             if(i.type === 'checkbox') i.checked = false;
+
             else i.value = '';
+
         });
+
         document.getElementById('filterCup').value = '';
+
         document.getElementById('sortSelect').value = 'default';
+
         filterAndRender();
+
     };
+
+
 
     window.toggleSearch = function() {
+
         const body = document.getElementById('searchBody');
+
         body.style.display = body.style.display === 'none' ? 'grid' : 'none';
+
     };
+
     
+
     // --- 詳細ページ ---
+
     const urlParams = new URLSearchParams(window.location.search);
+
     const detailId = urlParams.get('id');
 
+
+
     if (detailId) {
+
         const target = actressData.find(a => a.id == detailId);
+
         if (target) {
+
             const searchUrl = `https://www.dmm.co.jp/digital/videoa/-/list/=/searchstr=${target.name.replace(/\s+/g,"")}`;
+
             const affiliateLink = `https://al.dmm.co.jp/?lurl=${encodeURIComponent(searchUrl)}&af_id=${AFF_ID}`;
 
+
+
             document.getElementById('mainContainer').innerHTML = `
+
                 <a href="./" class="back-btn">← 一覧に戻る</a>
+
                 <div class="detail-view">
+
                     <h1 style="margin-top:0;">${target.name} <small style="font-size:0.6em; color:#777;">(${target.age}歳)</small></h1>
+
                     <div class="detail-flex">
+
                         <div class="detail-img">
+
                             <img src="${target.imageURL}" alt="${target.name}" id="detail-img-${target.id}">
+
                         </div>
+
                         <div class="detail-info">
+
                             <div class="tag-container">
+
                                 ${target.genre.map(g => `<span class="tag" style="font-size:0.9rem; padding:5px 10px;">${g}</span>`).join('')}
+
                             </div>
+
                             <table class="detail-table">
+
                                 <tr><th>身長</th><td>${target.height} cm</td></tr>
+
                                 <tr><th>バスト</th><td>${target.bust} cm (${target.cup}カップ)</td></tr>
+
                                 <tr><th>ウエスト</th><td>${target.waist} cm</td></tr>
+
                                 <tr><th>ヒップ</th><td>${target.hip} cm</td></tr>
+
                             </table>
+
                             <a href="${affiliateLink}" target="_blank" class="btn-link">FANZAで作品を見る</a>
+
                         </div>
+
                     </div>
+
                 </div>
+
             `;
+
             document.title = `${target.name} プロフィール | AV女優DB`;
 
+
+
             // 詳細ページでも画像をAPIから取得して差し替え
+
             const imgElement = document.getElementById(`detail-img-${target.id}`);
+
             fetchActressImage(target.name, imgElement);
+
         }
+
     } else {
+
         filterAndRender();
+
     }
+
 </script>
+
 </body>
+
 </html>
