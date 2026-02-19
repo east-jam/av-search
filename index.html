@@ -281,7 +281,7 @@
     // 一度取得した画像を保存しておくキャッシュ（APIへの過剰アクセスを防ぐため）
     const imageCache = {};
 
-    // データベース（プレースホルダー画像は、API取得失敗時のフォールバックとして残しています）
+    // データベース（配列の閉じカッコを修正しました）
     const actressData = [
         { id: 10, name: "河北 彩伽", age: 26, cup: "E", bust: 88, waist: 57, hip: 86, height: 169, genre: ["巨乳","人気", "美少女", "モデル"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
         { id: 11, name: "三上 悠亜", age: 32, cup: "H", bust: 90, waist: 57, hip: 88, height: 159, genre: ["巨乳","人気", "アイドル"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
@@ -331,46 +331,56 @@
         { id: 56, name: "末広純", age: 26, cup: "G", bust: 88, waist: 58, hip: 85, height: 155, genre: ["巨乳", "美肌"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
         { id: 57, name: "小花のん", age: 24, cup: "D", bust: 80, waist: 53, hip: 82, height: 152, genre: ["美少女", "美脚"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
         { id: 59, name: "田野憂", age: 24, cup: "F", bust: 86, waist: 58, hip: 85, height: 153, genre: ["美少女", "スレンダー"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 60, name: "奥田咲", age: 32, cup: "G", bust: 90, waist: 60, hip: 88, height: 155, genre: ["巨乳", "お姉さん"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." }
+        { id: 60, name: "奥田咲", age: 32, cup: "G", bust: 90, waist: 60, hip: 88, height: 155, genre: ["巨乳", "お姉さん"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
     ];
 
 // ==========================================
-    // 非同期でDMM APIから女優画像を取得する関数（修正版）
+    // 非同期でDMM APIから女優画像と公式リンクを取得する関数
     // ==========================================
-    async function fetchActressImage(actressName, imgElement) {
-        // すでに取得済みの場合はキャッシュを利用
+    async function fetchActressImage(actressName, imgElement, linkContainerElement = null) {
         if (imageCache[actressName]) {
             imgElement.src = imageCache[actressName];
             return;
         }
 
         try {
-            // 女優検索APIのURL
-            const dmmApiUrl = `https://api.dmm.com/affiliate/v3/ActressSearch?api_id=${API_ID}&affiliate_id=${AFF_ID}&keyword=${encodeURIComponent(actressName)}&output=json`;
+            // APIで検索ヒットしやすいように名前のスペースを除去
+            const searchKeyword = actressName.replace(/\s+/g, "");
             
-            // CORS回避のためのプロキシ（※もしこれでもダメなら corsproxy.io に変えてみてください）
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(dmmApiUrl)}`;
+            // DMM APIのURL
+            const dmmApiUrl = `https://api.dmm.com/affiliate/v3/ActressSearch?api_id=${API_ID}&affiliate_id=${AFF_ID}&keyword=${encodeURIComponent(searchKeyword)}&output=json`;
+            
+            // より安定して直接JSONを返してくれるプロキシに変更
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(dmmApiUrl)}`;
 
             const response = await fetch(proxyUrl);
-            const proxyData = await response.json();
+            if (!response.ok) throw new Error("ネットワークエラーが発生しました");
             
-            const data = JSON.parse(proxyData.contents);
+            const data = await response.json();
 
             if (data && data.result && data.result.actress && data.result.actress.length > 0) {
-                const imageUrl = data.result.actress[0].imageURL ? data.result.actress[0].imageURL.large : null;
+                const actressInfo = data.result.actress[0];
+                const imageUrl = actressInfo.imageURL ? actressInfo.imageURL.large : null;
                 
                 if (imageUrl) {
                     imageCache[actressName] = imageUrl;
                     imgElement.src = imageUrl;
-                    // 画像の読み込み失敗時に備えた処理（任意）
+                    // 画像の読み込み失敗時に備えた処理
                     imgElement.onerror = () => { imgElement.src = "https://placehold.co/400x500?text=No+Image"; };
+                }
+
+                // DMM APIが生成した公式のアフィリエイトURLが存在すれば、ボタンのリンクを上書きする
+                if (linkContainerElement && actressInfo.listURL && actressInfo.listURL.digital) {
+                    const btn = linkContainerElement.querySelector('.btn-link');
+                    if (btn) btn.href = actressInfo.listURL.digital;
                 }
             } else {
                 // 女優が見つからない場合はダミー画像
                 imgElement.src = "https://placehold.co/400x500?text=Not+Found";
             }
         } catch (error) {
-            console.error(`${actressName} の画像取得エラー:`, error);
+            console.error(`${actressName} のデータ取得エラー:`, error);
+            imgElement.src = "https://placehold.co/400x500?text=Error";
         }
     }
 
@@ -471,7 +481,7 @@
             const tags = item.genre.map(g => `<span class="tag">${g}</span>`).join('');
             const cupBadge = item.cup ? `<div class="cup-badge">${item.cup}</div>` : '';
 
-            // アフィリエイトURLの生成（直接検索結果一覧へ飛ばす）
+            // 予備の手動生成リンク（API通信前に仮でセットしておく）
             const searchUrl = `https://www.dmm.co.jp/digital/videoa/-/list/=/searchstr=${item.name.replace(/\s+/g,"")}`;
             const affiliateLink = `https://al.dmm.co.jp/?lurl=${encodeURIComponent(searchUrl)}&af_id=${AFF_ID}`;
 
@@ -493,15 +503,16 @@
                         <div class="tag-container">${tags}</div>
                     </div>
                 </a>
-                <div style="padding:0 15px 15px 15px;">
+                <div style="padding:0 15px 15px 15px;" class="link-container">
                     <a href="${affiliateLink}" target="_blank" class="btn-link">FANZAで探す</a>
                 </div>
             `;
             resultsContainer.appendChild(card);
 
-            // APIを叩いて本物の画像を取得し、<img>のsrcを差し替える（非同期処理）
+            // APIを叩いて本物の画像を取得し、ついでにボタンのリンクも公式のものに差し替える
             const imgElement = card.querySelector(`#img-${item.id}`);
-            fetchActressImage(item.name, imgElement);
+            const linkContainer = card.querySelector('.link-container');
+            fetchActressImage(item.name, imgElement, linkContainer);
         });
     }
 
@@ -554,16 +565,19 @@
                                 <tr><th>ウエスト</th><td>${target.waist} cm</td></tr>
                                 <tr><th>ヒップ</th><td>${target.hip} cm</td></tr>
                             </table>
-                            <a href="${affiliateLink}" target="_blank" class="btn-link">FANZAで作品を見る</a>
+                            <div class="link-container" style="margin-top: 20px;">
+                                <a href="${affiliateLink}" target="_blank" class="btn-link">FANZAで作品を見る</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
             document.title = `${target.name} プロフィール | AV女優DB`;
 
-            // 詳細ページでも画像をAPIから取得して差し替え
+            // 詳細ページでも画像をAPIから取得し、リンクを公式のものに差し替え
             const imgElement = document.getElementById(`detail-img-${target.id}`);
-            fetchActressImage(target.name, imgElement);
+            const linkContainer = document.querySelector('.link-container');
+            fetchActressImage(target.name, imgElement, linkContainer);
         }
     } else {
         filterAndRender();
