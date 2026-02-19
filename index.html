@@ -271,72 +271,69 @@
     Powered by <a href="https://affiliate.dmm.com/api/" target="_blank">DMM Webサービス</a>
 </footer>
 
-<script>
+// ==========================================
+    // 🚨 設定を確認してください
     // ==========================================
-    // 🚨 ここを自分のIDに書き換えてください！ 🚨
-    // ==========================================
-    const API_ID = "Qr42BeY54EnU1EpnVWwb";
-    const AFF_ID = "eastjam-001";
+    const API_ID = "Qr42BeY54EnU1EpnVWwb"; // ここが正しいか再確認
+    const AFF_ID = "eastjam-990";
 
-    // 一度取得した画像を保存しておくキャッシュ（APIへの過剰アクセスを防ぐため）
     const imageCache = {};
 
-    // データベース（配列の閉じカッコを修正しました）
     const actressData = [
-        { id: 10, name: "河北 彩伽", age: 26, cup: "E", bust: 88, waist: 57, hip: 86, height: 169, genre: ["巨乳","人気", "美少女", "モデル"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." }
+        { id: 10, name: "河北 彩伽", age: 26, cup: "E", bust: 88, waist: 57, hip: 86, height: 169, genre: ["巨乳","人気", "美少女", "モデル"], imageURL: "https://placehold.co/400x500/eee/999?text=Loading..." }
     ];
 
-// ==========================================
-    // 非同期でDMM APIから女優画像と公式リンクを取得する関数
-    // ==========================================
-    async function fetchActressImage(actressName, imgElement, linkContainerElement = null) {
-        if (imageCache[actressName]) {
-            imgElement.src = imageCache[actressName];
-            return;
-        }
+    // ==========================================
+    // 非同期でDMM APIから女優情報を取得する
+    // ==========================================
+    async function fetchActressImage(actressName, imgElement, linkContainerElement = null) {
+        if (imageCache[actressName]) {
+            imgElement.src = imageCache[actressName];
+            return;
+        }
 
-        try {
-            // APIで検索ヒットしやすいように名前のスペースを除去
-            const searchKeyword = actressName.replace(/\s+/g, "");
-            
-            // DMM APIのURL
-            const dmmApiUrl = `https://api.dmm.com/affiliate/v3/ActressSearch?api_id=${API_ID}&affiliate_id=${AFF_ID}&keyword=${encodeURIComponent(searchKeyword)}&output=json`;
-            
-            // 変更点：corsproxy.ioから、比較的安定している allorigins に変更
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(dmmApiUrl)}`;
+        try {
+            const searchKeyword = actressName.replace(/\s+/g, "");
+            const dmmApiUrl = `https://api.dmm.com/affiliate/v3/ActressSearch?api_id=${API_ID}&affiliate_id=${AFF_ID}&keyword=${encodeURIComponent(searchKeyword)}&output=json`;
+            
+            // alloriginsのプロキシURL（?url= の後にエンコードしたURLを結合）
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(dmmApiUrl)}`;
 
-            const response = await fetch(proxyUrl);
-            if (!response.ok) throw new Error("ネットワークエラーが発生しました");
-            
-            const data = await response.json();
+            const response = await fetch(proxyUrl);
+            if (!response.ok) throw new Error("Proxy Error");
+            
+            const wrapperData = await response.json();
+            // alloriginsは「contents」というプロパティに中身を文字列で入れるため解析が必要
+            const data = JSON.parse(wrapperData.contents);
 
-            if (data && data.result && data.result.actress && data.result.actress.length > 0) {
-                const actressInfo = data.result.actress[0];
-                const imageUrl = actressInfo.imageURL ? actressInfo.imageURL.large : null;
-                
-                if (imageUrl) {
-                    imageCache[actressName] = imageUrl;
-                    imgElement.src = imageUrl;
-                    // 画像の読み込み失敗時に備えた処理
-                    imgElement.onerror = () => { imgElement.src = "https://placehold.co/400x500?text=No+Image"; };
-                } else {
+            if (data?.result?.actress?.length > 0) {
+                const actressInfo = data.result.actress[0];
+                const imageUrl = actressInfo.imageURL?.large;
+                
+                if (imageUrl) {
+                    // HTTPSに強制置換（混在コンテンツエラー対策）
+                    const secureImageUrl = imageUrl.replace("http://", "https://");
+                    imageCache[actressName] = secureImageUrl;
+                    imgElement.src = secureImageUrl;
+                } else {
                     imgElement.src = "https://placehold.co/400x500?text=No+Image";
                 }
 
-                // DMM APIが生成した公式のアフィリエイトURLが存在すれば、ボタンのリンクを上書きする
-                if (linkContainerElement && actressInfo.listURL && actressInfo.listURL.digital) {
-                    const btn = linkContainerElement.querySelector('.btn-link');
-                    if (btn) btn.href = actressInfo.listURL.digital;
-                }
-            } else {
-                // 女優が見つからない場合はダミー画像
-                imgElement.src = "https://placehold.co/400x500?text=Not+Found";
-            }
-        } catch (error) {
-            console.error(`${actressName} のデータ取得エラー:`, error);
-            imgElement.src = "https://placehold.co/400x500?text=Error";
-        }
-    }
+                if (linkContainerElement && actressInfo.listURL?.digital) {
+                    const btn = linkContainerElement.querySelector('.btn-link');
+                    if (btn) btn.href = actressInfo.listURL.digital;
+                }
+            } else {
+                imgElement.src = "https://placehold.co/400x500?text=Not+Found";
+            }
+        } catch (error) {
+            console.error(`${actressName} 取得失敗:`, error);
+            imgElement.src = "https://placehold.co/400x500?text=Load+Error";
+        }
+    }
+
+    // --- 以下、フィルタリング等のロジック（変更なし） ---
+    // (中略: filterAndRender, renderGrid などの既存関数をそのまま使用してください)
 
     // --- 初期化処理 ---
     const resultsContainer = document.getElementById('resultsContainer');
