@@ -334,46 +334,43 @@
         { id: 60, name: "奥田咲", age: 32, cup: "G", bust: 90, waist: 60, hip: 88, height: 155, genre: ["巨乳", "お姉さん"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." }
     ];
 
-    // ==========================================
-    // 非同期でDMM APIから女優画像を取得する関数
+// ==========================================
+    // 非同期でDMM APIから女優画像を取得する関数（修正版）
     // ==========================================
     async function fetchActressImage(actressName, imgElement) {
-        // IDが未設定の場合は何もしない（プレースホルダーのまま）
-        if (API_ID === "あなたのAPI_IDをここに入力" || AFF_ID === "あなたのアフィリエイトIDをここに入力") {
-            return;
-        }
-
-        // 既に取得済みの画像があればキャッシュから返す（高速化）
+        // すでに取得済みの場合はキャッシュを利用
         if (imageCache[actressName]) {
             imgElement.src = imageCache[actressName];
             return;
         }
 
         try {
-            // 女優検索APIのURLを作成
+            // 女優検索APIのURL
             const dmmApiUrl = `https://api.dmm.com/affiliate/v3/ActressSearch?api_id=${API_ID}&affiliate_id=${AFF_ID}&keyword=${encodeURIComponent(actressName)}&output=json`;
             
-            // CORSエラーを回避するための無料プロキシサーバーを経由させる
+            // CORS回避のためのプロキシ（※もしこれでもダメなら corsproxy.io に変えてみてください）
             const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(dmmApiUrl)}`;
 
             const response = await fetch(proxyUrl);
             const proxyData = await response.json();
             
-            // プロキシ経由で取得したJSONテキストを解析
             const data = JSON.parse(proxyData.contents);
 
-            // 該当する女優の画像が存在するかチェック
             if (data && data.result && data.result.actress && data.result.actress.length > 0) {
-                // 最も一致した女優（配列の0番目）の大きな画像URLを取得
                 const imageUrl = data.result.actress[0].imageURL ? data.result.actress[0].imageURL.large : null;
                 
                 if (imageUrl) {
-                    imageCache[actressName] = imageUrl; // キャッシュに保存
-                    imgElement.src = imageUrl;          // 画像を差し替え
+                    imageCache[actressName] = imageUrl;
+                    imgElement.src = imageUrl;
+                    // 画像の読み込み失敗時に備えた処理（任意）
+                    imgElement.onerror = () => { imgElement.src = "https://placehold.co/400x500?text=No+Image"; };
                 }
+            } else {
+                // 女優が見つからない場合はダミー画像
+                imgElement.src = "https://placehold.co/400x500?text=Not+Found";
             }
         } catch (error) {
-            console.error(`${actressName} の画像取得に失敗しました:`, error);
+            console.error(`${actressName} の画像取得エラー:`, error);
         }
     }
 
