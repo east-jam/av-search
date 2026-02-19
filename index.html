@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AV女優検索データベース｜API自動画像取得・収益化版</title>
-    <meta name="description" content="AV女優を年齢・カップサイズ・身長・ジャンルで絞り込み検索できる総合データベース。">
-
+    <title>AV女優検索データベース｜API自動画像取得版</title>
     <style>
         :root {
             --primary: #ff4081;
@@ -22,35 +20,24 @@
             font-family: "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ヘッダー */
         header {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 20px;
-            text-align: center;
+            color: white; padding: 20px; text-align: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
         header h1 { margin: 0; font-size: 1.5rem; }
 
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
 
         /* 検索パネル */
         .search-panel {
-            background: white;
-            padding: 20px;
-            border-radius: var(--card-radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
+            background: white; padding: 20px; border-radius: var(--card-radius);
+            box-shadow: var(--shadow); margin-bottom: 20px;
         }
 
         .search-header {
@@ -71,9 +58,7 @@
         }
 
         .range-group { display: flex; align-items: center; gap: 5px; }
-        .range-group span { color: var(--text-light); }
 
-        /* チェックボックス */
         .genre-group {
             grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px;
             padding-top: 10px; border-top: 1px solid #eee;
@@ -86,94 +71,51 @@
         }
 
         .checkbox-label:hover { background: #ffebf0; border-color: var(--primary); }
-        .checkbox-label input { accent-color: var(--primary); }
-
-        /* コントロールバー */
-        .control-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 15px; flex-wrap: wrap; gap: 10px;
-        }
-
-        .result-count { font-weight: bold; color: var(--text-light); }
-        .result-count span { color: var(--primary); font-size: 1.2rem; margin: 0 5px; }
-        .sort-select { padding: 8px; border-radius: 6px; border: 1px solid #ddd; }
-
-        /* カードグリッド */
-        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
 
         /* カードデザイン */
+        .control-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .result-count { font-weight: bold; color: var(--text-light); }
+        .result-count span { color: var(--primary); font-size: 1.2rem; margin: 0 5px; }
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+
         .card {
             background: white; border-radius: var(--card-radius); box-shadow: var(--shadow);
-            overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;
-            position: relative; display: flex; flex-direction: column;
+            overflow: hidden; transition: transform 0.2s; position: relative;
+            display: flex; flex-direction: column; text-decoration: none; color: inherit;
         }
 
-        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.12); }
-
-        .card-image-wrapper {
-            position: relative; padding-top: 125%; background: #eee; overflow: hidden;
-        }
-
-        .card-image {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; transition: transform 0.3s;
-        }
+        .card:hover { transform: translateY(-5px); }
+        .card-image-wrapper { position: relative; padding-top: 125%; background: #eee; }
+        .card-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
         
-        .card:hover .card-image { transform: scale(1.05); }
-
         .cup-badge {
             position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7);
-            color: #fff; width: 40px; height: 40px; border-radius: 50%;
+            color: #fff; width: 38px; height: 38px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 1.2rem; border: 2px solid var(--primary); z-index: 2;
+            font-weight: bold; border: 2px solid var(--primary); z-index: 2;
         }
 
-        .card-content { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
-        .card-title { margin: 0 0 5px 0; font-size: 1.1rem; font-weight: bold; }
-        .card-title a { text-decoration: none; color: var(--text-main); }
-        .card-meta { font-size: 0.85rem; color: var(--text-light); margin-bottom: 10px; }
-
-        .stats-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.85rem;
-            background: #f8f8f8; padding: 8px; border-radius: 6px; margin-bottom: 10px;
-        }
-
-        .stats-item strong { color: var(--text-main); }
-        .tag-container { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 15px; }
-        .tag { font-size: 0.7rem; padding: 3px 8px; background: #ffeef4; color: var(--primary); border-radius: 4px; }
+        .card-content { padding: 15px; flex-grow: 1; }
+        .card-title { margin: 0 0 5px 0; font-size: 1.1rem; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.8rem; background: #f8f8f8; padding: 8px; border-radius: 6px; }
+        .tag-container { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; }
+        .tag { font-size: 0.65rem; padding: 2px 6px; background: #ffeef4; color: var(--primary); border-radius: 4px; }
 
         .btn-link {
-            display: block; margin-top: auto; background: var(--primary); color: white;
-            text-align: center; padding: 10px; text-decoration: none; border-radius: 6px;
-            font-weight: bold; transition: background 0.2s;
+            display: block; margin: 10px 15px 15px; background: var(--primary); color: white;
+            text-align: center; padding: 10px; text-decoration: none; border-radius: 6px; font-weight: bold;
         }
-        .btn-link:hover { background: var(--primary-dark); }
 
         /* 詳細ページ */
-        .detail-view {
-            background: white; padding: 30px; border-radius: var(--card-radius);
-            box-shadow: var(--shadow); max-width: 800px; margin: 0 auto;
-        }
+        .detail-view { background: white; padding: 30px; border-radius: var(--card-radius); box-shadow: var(--shadow); max-width: 800px; margin: 0 auto; }
         .detail-flex { display: flex; flex-wrap: wrap; gap: 30px; }
-        .detail-img { flex: 1; min-width: 300px; }
-        .detail-img img { width: 100%; border-radius: 8px; }
-        .detail-info { flex: 1; min-width: 300px; }
+        .detail-img img { width: 100%; max-width: 350px; border-radius: 8px; }
         .detail-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        .detail-table th, .detail-table td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
-        .detail-table th { width: 30%; color: var(--text-light); }
-        .back-btn { display: inline-block; margin-bottom: 20px; color: var(--text-light); text-decoration: none; }
+        .detail-table th { text-align: left; color: var(--text-light); border-bottom: 1px solid #eee; padding: 10px 0; }
+        .detail-table td { padding: 10px 0; border-bottom: 1px solid #eee; }
+        .back-btn { display: inline-block; margin-bottom: 20px; color: var(--primary); text-decoration: none; font-weight: bold; }
 
-        /* フッター（クレジット用） */
-        footer {
-            text-align: center; padding: 30px 15px; color: #888; font-size: 0.85rem;
-            margin-top: 40px; border-top: 1px solid #ddd;
-        }
-        footer a { color: #888; text-decoration: underline; }
-
-        @media (max-width: 600px) {
-            .search-body { grid-template-columns: 1fr 1fr; }
-            .form-group:first-child { grid-column: 1 / -1; }
-        }
+        footer { text-align: center; padding: 30px; color: #888; font-size: 0.8rem; border-top: 1px solid #ddd; margin-top: 40px; }
     </style>
 </head>
 <body>
@@ -186,27 +128,14 @@
     <div class="search-panel">
         <div class="search-header" onclick="toggleSearch()">
             <span>🔍 絞り込み検索条件</span>
-            <span style="font-size:0.8rem; font-weight:normal; color:#888;">タップして開閉</span>
+            <span style="font-size:0.8rem; font-weight:normal; color:#888;">開閉する</span>
         </div>
         <div class="search-body" id="searchBody">
-            <div class="form-group">
-                <label>名前</label>
-                <input type="text" id="filterName" placeholder="名前を入力">
-            </div>
+            <div class="form-group"><label>名前</label><input type="text" id="filterName" placeholder="名前を入力"></div>
             <div class="form-group">
                 <label>年齢</label>
                 <div class="range-group">
-                    <input type="number" id="filterAgeMin" placeholder="Min">
-                    <span>〜</span>
-                    <input type="number" id="filterAgeMax" placeholder="Max">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>身長 (cm)</label>
-                <div class="range-group">
-                    <input type="number" id="filterHeightMin" placeholder="140">
-                    <span>〜</span>
-                    <input type="number" id="filterHeightMax" placeholder="180">
+                    <input type="number" id="filterAgeMin" placeholder="Min"><span>〜</span><input type="number" id="filterAgeMax" placeholder="Max">
                 </div>
             </div>
             <div class="form-group">
@@ -219,48 +148,19 @@
                     <option value="J">J以上</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>バスト (cm)</label>
-                <div class="range-group">
-                    <input type="number" id="filterBustMin" placeholder="Min">
-                    <span>〜</span>
-                    <input type="number" id="filterBustMax" placeholder="Max">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>ウエスト (cm)</label>
-                <div class="range-group">
-                    <input type="number" id="filterWaistMin" placeholder="Min">
-                    <span>〜</span>
-                    <input type="number" id="filterWaistMax" placeholder="Max">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>ヒップ (cm)</label>
-                <div class="range-group">
-                    <input type="number" id="filterHipMin" placeholder="Min">
-                    <span>〜</span>
-                    <input type="number" id="filterHipMax" placeholder="Max">
-                </div>
-            </div>
-
             <div class="genre-group" id="genreContainer"></div>
-            
             <div style="grid-column: 1 / -1; text-align: right;">
-                <button onclick="resetFilters()" style="padding: 8px 16px; background:#ddd; border:none; border-radius:4px; cursor:pointer;">条件リセット</button>
+                <button onclick="resetFilters()" style="padding: 8px 16px; cursor:pointer;">リセット</button>
             </div>
         </div>
     </div>
 
     <div class="control-bar">
         <div class="result-count">該当: <span id="countDisplay">0</span>件</div>
-        <select id="sortSelect" class="sort-select">
-            <option value="default">並び替え</option>
+        <select id="sortSelect">
+            <option value="default">標準順</option>
             <option value="age_asc">年齢が若い順</option>
-            <option value="age_desc">年齢が高い順</option>
-            <option value="height_desc">身長が高い順</option>
-            <option value="height_asc">身長が低い順</option>
-            <option value="bust_desc">バストが大きい順</option>
+            <option value="bust_desc">バスト順</option>
         </select>
     </div>
 
@@ -271,20 +171,21 @@
     Powered by <a href="https://affiliate.dmm.com/api/" target="_blank">DMM Webサービス</a>
 </footer>
 
-// ==========================================
-    // 🚨 設定を確認してください
-    // ==========================================
-    const API_ID = "Qr42BeY54EnU1EpnVWwb"; // ここが正しいか再確認
-    const AFF_ID = "eastjam-990";
+<script>
+    const API_ID = "Qr42BeY54EnU1EpnVWwb";
+    const AFF_ID = "eastjam-001";
 
     const imageCache = {};
 
+    // データベース
     const actressData = [
-        { id: 10, name: "河北 彩伽", age: 26, cup: "E", bust: 88, waist: 57, hip: 86, height: 169, genre: ["巨乳","人気", "美少女", "モデル"], imageURL: "https://placehold.co/400x500/eee/999?text=Loading..." }
+        { id: 10, name: "河北 彩伽", age: 26, cup: "E", bust: 88, waist: 57, hip: 86, height: 169, genre: ["人気", "美少女", "モデル"] },
+        { id: 11, name: "安部 未華子", age: 35, cup: "C", bust: 84, waist: 58, hip: 85, height: 154, genre: ["熟女", "美肌"] },
+        { id: 12, name: "三上 悠亜", age: 30, cup: "F", bust: 84, waist: 58, hip: 88, height: 159, genre: ["人気", "アイドル"] }
     ];
 
     // ==========================================
-    // 非同期でDMM APIから女優情報を取得する
+    // APIから画像を取得するメイン関数（修正済）
     // ==========================================
     async function fetchActressImage(actressName, imgElement, linkContainerElement = null) {
         if (imageCache[actressName]) {
@@ -296,123 +197,62 @@
             const searchKeyword = actressName.replace(/\s+/g, "");
             const dmmApiUrl = `https://api.dmm.com/affiliate/v3/ActressSearch?api_id=${API_ID}&affiliate_id=${AFF_ID}&keyword=${encodeURIComponent(searchKeyword)}&output=json`;
             
-            // alloriginsのプロキシURL（?url= の後にエンコードしたURLを結合）
+            // alloriginsプロキシを使用（最も安定）
             const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(dmmApiUrl)}`;
 
             const response = await fetch(proxyUrl);
-            if (!response.ok) throw new Error("Proxy Error");
-            
-            const wrapperData = await response.json();
-            // alloriginsは「contents」というプロパティに中身を文字列で入れるため解析が必要
-            const data = JSON.parse(wrapperData.contents);
+            const wrapper = await response.json();
+            const data = JSON.parse(wrapper.contents); // contentsプロパティをJSONとして解析
 
             if (data?.result?.actress?.length > 0) {
-                const actressInfo = data.result.actress[0];
-                const imageUrl = actressInfo.imageURL?.large;
+                const info = data.result.actress[0];
+                const rawUrl = info.imageURL?.large;
                 
-                if (imageUrl) {
-                    // HTTPSに強制置換（混在コンテンツエラー対策）
-                    const secureImageUrl = imageUrl.replace("http://", "https://");
-                    imageCache[actressName] = secureImageUrl;
-                    imgElement.src = secureImageUrl;
+                if (rawUrl) {
+                    const secureUrl = rawUrl.replace("http://", "https://");
+                    imageCache[actressName] = secureUrl;
+                    imgElement.src = secureUrl;
                 } else {
                     imgElement.src = "https://placehold.co/400x500?text=No+Image";
                 }
 
-                if (linkContainerElement && actressInfo.listURL?.digital) {
+                if (linkContainerElement && info.listURL?.digital) {
                     const btn = linkContainerElement.querySelector('.btn-link');
-                    if (btn) btn.href = actressInfo.listURL.digital;
+                    if (btn) btn.href = info.listURL.digital;
                 }
             } else {
                 imgElement.src = "https://placehold.co/400x500?text=Not+Found";
             }
-        } catch (error) {
-            console.error(`${actressName} 取得失敗:`, error);
-            imgElement.src = "https://placehold.co/400x500?text=Load+Error";
+        } catch (err) {
+            console.error("Fetch error:", err);
+            imgElement.src = "https://placehold.co/400x500?text=Error";
         }
     }
 
-    // --- 以下、フィルタリング等のロジック（変更なし） ---
-    // (中略: filterAndRender, renderGrid などの既存関数をそのまま使用してください)
-
-    // --- 初期化処理 ---
+    // --- フィルタリング & レンダリングロジック ---
     const resultsContainer = document.getElementById('resultsContainer');
     const countDisplay = document.getElementById('countDisplay');
     const genreContainer = document.getElementById('genreContainer');
-    
-    // ジャンル生成
+
     const allGenres = [...new Set(actressData.flatMap(d => d.genre))].sort();
-    allGenres.forEach(genre => {
-        const label = document.createElement('label');
-        label.className = 'checkbox-label';
-        label.innerHTML = `<input type="checkbox" value="${genre}" class="filter-genre"> ${genre}`;
-        genreContainer.appendChild(label);
+    allGenres.forEach(g => {
+        const lb = document.createElement('label');
+        lb.className = 'checkbox-label';
+        lb.innerHTML = `<input type="checkbox" value="${g}" class="filter-genre"> ${g}`;
+        genreContainer.appendChild(lb);
     });
 
-    const inputs = {
-        name: document.getElementById('filterName'),
-        ageMin: document.getElementById('filterAgeMin'), ageMax: document.getElementById('filterAgeMax'),
-        heightMin: document.getElementById('filterHeightMin'), heightMax: document.getElementById('filterHeightMax'),
-        cup: document.getElementById('filterCup'),
-        bustMin: document.getElementById('filterBustMin'), bustMax: document.getElementById('filterBustMax'),
-        waistMin: document.getElementById('filterWaistMin'), waistMax: document.getElementById('filterWaistMax'),
-        hipMin: document.getElementById('filterHipMin'), hipMax: document.getElementById('filterHipMax'),
-        sort: document.getElementById('sortSelect')
-    };
-    const genreInputs = document.getElementsByClassName('filter-genre');
-
-    // --- フィルタリング & レンダリング ---
     function filterAndRender() {
-        const nameVal = inputs.name.value.toLowerCase().trim().replace(/\s+/g, "");
-        const ageMin = parseInt(inputs.ageMin.value) || 0;
-        const ageMax = parseInt(inputs.ageMax.value) || 100;
-        const heightMin = parseInt(inputs.heightMin.value) || 0;
-        const heightMax = parseInt(inputs.heightMax.value) || 300;
-        const cupVal = inputs.cup.value;
-        const bustMin = parseInt(inputs.bustMin.value) || 0;
-        const bustMax = parseInt(inputs.bustMax.value) || 200;
-        const waistMin = parseInt(inputs.waistMin.value) || 0;
-        const waistMax = parseInt(inputs.waistMax.value) || 200;
-        const hipMin = parseInt(inputs.hipMin.value) || 0;
-        const hipMax = parseInt(inputs.hipMax.value) || 200;
-        const selectedGenres = Array.from(genreInputs).filter(cb => cb.checked).map(cb => cb.value);
+        const nameVal = document.getElementById('filterName').value.trim();
+        const cupVal = document.getElementById('filterCup').value;
+        const selectedGenres = Array.from(document.querySelectorAll('.filter-genre:checked')).map(c => c.value);
 
-        let filtered = actressData.filter(item => {
-            const normalizeName = item.name.toLowerCase().replace(/\s+/g, "");
-            if (nameVal && !normalizeName.includes(nameVal)) return false;
-            if (item.age < ageMin || item.age > ageMax) return false;
-            if (item.height < heightMin || item.height > heightMax) return false;
-            if (item.bust && (item.bust < bustMin || item.bust > bustMax)) return false;
-            if (item.waist && (item.waist < waistMin || item.waist > waistMax)) return false;
-            if (item.hip && (item.hip < hipMin || item.hip > hipMax)) return false;
-
-            if (cupVal) {
-                if (cupVal === 'J') {
-                    if (item.cup < 'J') return false;
-                } else {
-                    if (item.cup !== cupVal) return false;
-                }
-            }
-
-            if (selectedGenres.length > 0) {
-                if (!selectedGenres.some(g => item.genre.includes(g))) return false;
-            }
+        const filtered = actressData.filter(item => {
+            if (nameVal && !item.name.includes(nameVal)) return false;
+            if (cupVal && item.cup !== cupVal) return false;
+            if (selectedGenres.length > 0 && !selectedGenres.some(g => item.genre.includes(g))) return false;
             return true;
         });
-
-        const sortMode = inputs.sort.value;
-        if (sortMode !== 'default') {
-            filtered.sort((a, b) => {
-                switch(sortMode) {
-                    case 'age_asc': return a.age - b.age;
-                    case 'age_desc': return b.age - a.age;
-                    case 'height_desc': return b.height - a.height;
-                    case 'height_asc': return a.height - b.height;
-                    case 'bust_desc': return (b.bust || 0) - (a.bust || 0);
-                    default: return 0;
-                }
-            });
-        }
 
         renderGrid(filtered);
     }
@@ -421,114 +261,76 @@
         resultsContainer.innerHTML = '';
         countDisplay.textContent = data.length;
 
-        if (data.length === 0) {
-            resultsContainer.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#888;">条件に一致する女優は見つかりませんでした。</div>';
-            return;
-        }
-
         data.forEach(item => {
             const card = document.createElement('div');
             card.className = 'card';
-            const tags = item.genre.map(g => `<span class="tag">${g}</span>`).join('');
-            const cupBadge = item.cup ? `<div class="cup-badge">${item.cup}</div>` : '';
-
-            // 予備の手動生成リンク（API通信前に仮でセットしておく）
             const searchUrl = `https://www.dmm.co.jp/digital/videoa/-/list/=/searchstr=${item.name.replace(/\s+/g,"")}`;
-            const affiliateLink = `https://al.dmm.co.jp/?lurl=${encodeURIComponent(searchUrl)}&af_id=${AFF_ID}`;
+            const affLink = `https://al.dmm.co.jp/?lurl=${encodeURIComponent(searchUrl)}&af_id=${AFF_ID}`;
 
             card.innerHTML = `
                 <a href="?id=${item.id}" style="text-decoration:none; color:inherit;">
                     <div class="card-image-wrapper">
-                        ${cupBadge}
-                        <img src="${item.imageURL}" alt="${item.name}" class="card-image" id="img-${item.id}" loading="lazy">
+                        <div class="cup-badge">${item.cup}</div>
+                        <img src="https://placehold.co/400x500?text=Loading..." class="card-image" id="img-${item.id}">
                     </div>
                     <div class="card-content">
                         <h2 class="card-title">${item.name}</h2>
-                        <div class="card-meta">${item.age}歳 / T${item.height}cm</div>
                         <div class="stats-grid">
-                            <div class="stats-item">B: <strong>${item.bust || '-'}</strong></div>
-                            <div class="stats-item">W: <strong>${item.waist || '-'}</strong></div>
-                            <div class="stats-item">H: <strong>${item.hip || '-'}</strong></div>
-                            <div class="stats-item">Cup: <strong>${item.cup || '-'}</strong></div>
+                            <div>B:${item.bust}</div><div>W:${item.waist}</div>
+                            <div>H:${item.hip}</div><div>T:${item.height}</div>
                         </div>
-                        <div class="tag-container">${tags}</div>
+                        <div class="tag-container">${item.genre.map(g=>`<span class="tag">${g}</span>`).join('')}</div>
                     </div>
                 </a>
-                <div style="padding:0 15px 15px 15px;" class="link-container">
-                    <a href="${affiliateLink}" target="_blank" class="btn-link">FANZAで探す</a>
+                <div class="link-wrapper">
+                    <a href="${affLink}" target="_blank" class="btn-link">作品を見る</a>
                 </div>
             `;
             resultsContainer.appendChild(card);
-
-            // APIを叩いて本物の画像を取得し、ついでにボタンのリンクも公式のものに差し替える
-            const imgElement = card.querySelector(`#img-${item.id}`);
-            const linkContainer = card.querySelector('.link-container');
-            fetchActressImage(item.name, imgElement, linkContainer);
+            fetchActressImage(item.name, card.querySelector(`#img-${item.id}`), card.querySelector('.link-wrapper'));
         });
     }
 
-    Object.values(inputs).forEach(input => {
-        input.addEventListener('input', filterAndRender);
-        input.addEventListener('change', filterAndRender);
-    });
-    Array.from(genreInputs).forEach(cb => cb.addEventListener('change', filterAndRender));
-
-    window.resetFilters = function() {
-        document.querySelectorAll('input').forEach(i => {
-            if(i.type === 'checkbox') i.checked = false;
-            else i.value = '';
-        });
+    // 初期起動とイベント設定
+    document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', filterAndRender));
+    window.toggleSearch = () => {
+        const b = document.getElementById('searchBody');
+        b.style.display = (b.style.display === 'none') ? 'grid' : 'none';
+    };
+    window.resetFilters = () => {
+        document.querySelectorAll('input[type="text"], input[type="number"]').forEach(i => i.value = '');
+        document.querySelectorAll('input[type="checkbox"]').forEach(i => i.checked = false);
         document.getElementById('filterCup').value = '';
-        document.getElementById('sortSelect').value = 'default';
         filterAndRender();
     };
 
-    window.toggleSearch = function() {
-        const body = document.getElementById('searchBody');
-        body.style.display = body.style.display === 'none' ? 'grid' : 'none';
-    };
-    
-    // --- 詳細ページ ---
+    // 詳細ページ処理
     const urlParams = new URLSearchParams(window.location.search);
     const detailId = urlParams.get('id');
-
     if (detailId) {
         const target = actressData.find(a => a.id == detailId);
         if (target) {
-            const searchUrl = `https://www.dmm.co.jp/digital/videoa/-/list/=/searchstr=${target.name.replace(/\s+/g,"")}`;
-            const affiliateLink = `https://al.dmm.co.jp/?lurl=${encodeURIComponent(searchUrl)}&af_id=${AFF_ID}`;
-
             document.getElementById('mainContainer').innerHTML = `
-                <a href="./" class="back-btn">← 一覧に戻る</a>
+                <a href="./" class="back-btn">← 戻る</a>
                 <div class="detail-view">
-                    <h1 style="margin-top:0;">${target.name} <small style="font-size:0.6em; color:#777;">(${target.age}歳)</small></h1>
                     <div class="detail-flex">
                         <div class="detail-img">
-                            <img src="${target.imageURL}" alt="${target.name}" id="detail-img-${target.id}">
+                            <img src="https://placehold.co/400x500?text=Loading..." id="detail-img">
                         </div>
                         <div class="detail-info">
-                            <div class="tag-container">
-                                ${target.genre.map(g => `<span class="tag" style="font-size:0.9rem; padding:5px 10px;">${g}</span>`).join('')}
-                            </div>
+                            <h1>${target.name} (${target.age}歳)</h1>
                             <table class="detail-table">
-                                <tr><th>身長</th><td>${target.height} cm</td></tr>
-                                <tr><th>バスト</th><td>${target.bust} cm (${target.cup}カップ)</td></tr>
-                                <tr><th>ウエスト</th><td>${target.waist} cm</td></tr>
-                                <tr><th>ヒップ</th><td>${target.hip} cm</td></tr>
+                                <tr><th>スリーサイズ</th><td>B${target.bust} W${target.waist} H${target.hip}</td></tr>
+                                <tr><th>カップ / 身長</th><td>${target.cup}カップ / ${target.height}cm</td></tr>
                             </table>
-                            <div class="link-container" style="margin-top: 20px;">
-                                <a href="${affiliateLink}" target="_blank" class="btn-link">FANZAで作品を見る</a>
+                            <div class="link-wrapper">
+                                <a href="#" target="_blank" class="btn-link">公式作品一覧へ</a>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
-            document.title = `${target.name} プロフィール | AV女優DB`;
-
-            // 詳細ページでも画像をAPIから取得し、リンクを公式のものに差し替え
-            const imgElement = document.getElementById(`detail-img-${target.id}`);
-            const linkContainer = document.querySelector('.link-container');
-            fetchActressImage(target.name, imgElement, linkContainer);
+            fetchActressImage(target.name, document.getElementById('detail-img'), document.querySelector('.link-wrapper'));
         }
     } else {
         filterAndRender();
