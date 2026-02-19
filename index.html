@@ -287,54 +287,56 @@
     ];
 
     // ==========================================
-    // 非同期でDMM APIから女優画像と公式リンクを取得する関数
-    // ==========================================
-    async function fetchActressImage(actressName, imgElement, linkContainerElement = null) {
-        if (imageCache[actressName]) {
-            imgElement.src = imageCache[actressName];
-            return;
-        }
+    // 非同期でDMM APIから女優画像と公式リンクを取得する関数
+    // ==========================================
+    async function fetchActressImage(actressName, imgElement, linkContainerElement = null) {
+        if (imageCache[actressName]) {
+            imgElement.src = imageCache[actressName];
+            return;
+        }
 
-        try {
-            // APIで検索ヒットしやすいように名前のスペースを除去
-            const searchKeyword = actressName.replace(/\s+/g, "");
-            
-            // DMM APIのURL
-            const dmmApiUrl = `https://api.dmm.com/affiliate/v3/ActressSearch?api_id=${API_ID}&affiliate_id=${AFF_ID}&keyword=${encodeURIComponent(searchKeyword)}&output=json`;
-            
-            // より安定して直接JSONを返してくれるプロキシに変更
-            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(dmmApiUrl)}`;
+        try {
+            // APIで検索ヒットしやすいように名前のスペースを除去
+            const searchKeyword = actressName.replace(/\s+/g, "");
+            
+            // DMM APIのURL
+            const dmmApiUrl = `https://api.dmm.com/affiliate/v3/ActressSearch?api_id=${API_ID}&affiliate_id=${AFF_ID}&keyword=${encodeURIComponent(searchKeyword)}&output=json`;
+            
+            // 変更点：corsproxy.ioから、比較的安定している allorigins に変更
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(dmmApiUrl)}`;
 
-            const response = await fetch(proxyUrl);
-            if (!response.ok) throw new Error("ネットワークエラーが発生しました");
-            
-            const data = await response.json();
+            const response = await fetch(proxyUrl);
+            if (!response.ok) throw new Error("ネットワークエラーが発生しました");
+            
+            const data = await response.json();
 
-            if (data && data.result && data.result.actress && data.result.actress.length > 0) {
-                const actressInfo = data.result.actress[0];
-                const imageUrl = actressInfo.imageURL ? actressInfo.imageURL.large : null;
-                
-                if (imageUrl) {
-                    imageCache[actressName] = imageUrl;
-                    imgElement.src = imageUrl;
-                    // 画像の読み込み失敗時に備えた処理
-                    imgElement.onerror = () => { imgElement.src = "https://placehold.co/400x500?text=No+Image"; };
+            if (data && data.result && data.result.actress && data.result.actress.length > 0) {
+                const actressInfo = data.result.actress[0];
+                const imageUrl = actressInfo.imageURL ? actressInfo.imageURL.large : null;
+                
+                if (imageUrl) {
+                    imageCache[actressName] = imageUrl;
+                    imgElement.src = imageUrl;
+                    // 画像の読み込み失敗時に備えた処理
+                    imgElement.onerror = () => { imgElement.src = "https://placehold.co/400x500?text=No+Image"; };
+                } else {
+                    imgElement.src = "https://placehold.co/400x500?text=No+Image";
                 }
 
-                // DMM APIが生成した公式のアフィリエイトURLが存在すれば、ボタンのリンクを上書きする
-                if (linkContainerElement && actressInfo.listURL && actressInfo.listURL.digital) {
-                    const btn = linkContainerElement.querySelector('.btn-link');
-                    if (btn) btn.href = actressInfo.listURL.digital;
-                }
-            } else {
-                // 女優が見つからない場合はダミー画像
-                imgElement.src = "https://placehold.co/400x500?text=Not+Found";
-            }
-        } catch (error) {
-            console.error(`${actressName} のデータ取得エラー:`, error);
-            imgElement.src = "https://placehold.co/400x500?text=Error";
-        }
-    }
+                // DMM APIが生成した公式のアフィリエイトURLが存在すれば、ボタンのリンクを上書きする
+                if (linkContainerElement && actressInfo.listURL && actressInfo.listURL.digital) {
+                    const btn = linkContainerElement.querySelector('.btn-link');
+                    if (btn) btn.href = actressInfo.listURL.digital;
+                }
+            } else {
+                // 女優が見つからない場合はダミー画像
+                imgElement.src = "https://placehold.co/400x500?text=Not+Found";
+            }
+        } catch (error) {
+            console.error(`${actressName} のデータ取得エラー:`, error);
+            imgElement.src = "https://placehold.co/400x500?text=Error";
+        }
+    }
 
     // --- 初期化処理 ---
     const resultsContainer = document.getElementById('resultsContainer');
