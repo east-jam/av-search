@@ -283,58 +283,10 @@
 
     // データベース（配列の閉じカッコを修正しました）
     const actressData = [
-        { id: 10, name: "河北 彩伽", age: 26, cup: "E", bust: 88, waist: 57, hip: 86, height: 169, genre: ["巨乳","人気", "美少女", "モデル"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 11, name: "三上 悠亜", age: 32, cup: "H", bust: 90, waist: 57, hip: 88, height: 159, genre: ["巨乳","人気", "アイドル"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 12, name: "小倉 由菜", age: 27, cup: "D", bust: 83, waist: 58, hip: 87, height: 156, genre: ["人気", "美少女"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 14, name: "本郷 愛", age: 26, cup: "F", bust: 85, waist: 53, hip: 85, height: 158, genre: ["巨乳","人気", "美少女"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 15, name: "伊藤 舞雪", age: 28, cup: "F", bust: 88, waist: 54, hip: 89, height: 160, genre: ["巨乳", "熟女"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 16, name: "石川 澪", age: 23, cup: "B", bust: 78, waist: 56, hip: 85, height: 158, genre: ["人気", "美少女"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 17, name: "未歩 なな", age: 26, cup: "D", bust: 86, waist: 56, hip: 85, height: 156, genre: ["美脚", "スレンダー"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 18, name: "安齋 らら", age: 31, cup: "J", bust: 105, waist: 58, hip: 89, height: 161, genre: ["巨乳", "神乳","爆乳"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 19, name: "山手 梨愛", age: 25, cup: "I", bust: 99, waist: 58, hip: 88, height: 170, genre: ["爆乳","巨乳", "高身長"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 20, name: "森 日向子", age: 25, cup: "E", bust: 85, waist: 56, hip: 88, height: 166, genre: ["巨乳", "人気","高身長"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 21, name: "柏木 こなつ", age: 22, cup: "F", bust: 86, waist: 59, hip: 88, height: 155, genre: ["巨乳", "低身長"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 22, name: "倉本 すみれ", age: 24, cup: "C", bust: 85, waist: 57, hip: 85, height: 153, genre: ["人気", "美少女"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 23, name: "波多野 結衣", age: 37, cup: "E", bust: 88, waist: 59, hip: 94, height: 163, genre: ["熟女", "美脚", "人気"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 24, name: "北野 未奈", age: 25, cup: "G", bust: 95, waist: 58, hip: 90, height: 162, genre: ["モデル", "美脚"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 25, name: "新井 リマ", age: 25, cup: "F", bust: 88, waist: 56, hip: 84, height: 157, genre: ["スレンダー", "美脚"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 26, name: "皆月 ひかる", age: 28, cup: "B", bust: 83, waist: 55, hip: 85, height: 148, genre: ["スレンダー", "美脚"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 27, name: "天馬 ゆい", age: 28, cup: "D", bust: 85, waist: 61, hip: 87, height: 162, genre: ["巨乳", "美少女"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 28, name: "森沢 かな", age: 33, cup: "F", bust: 86, waist: 59, hip: 86, height: 160, genre: ["熟女", "美人", "巨乳"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 29, name: "浅野 こころ", age: 23, cup: "E", bust: 83, waist: 59, hip: 85, height: 156, genre: ["ロリ", "巨乳"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 30, name: "篠田 ゆう", age: 34, cup: "F", bust: 88, waist: 60, hip: 88, height: 155, genre: ["ギャル", "スレンダー"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 31, name: "東條 なつ", age: 26, cup: "C", bust: 78, waist: 55, hip: 85, height: 156, genre: ["巨乳", "高身長", "ギャル"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 32, name: "大槻 ひびき", age: 37, cup: "F", bust: 87, waist: 57, hip: 88, height: 161, genre: ["熟女", "人気"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 33, name: "新村 あかり", age: 31, cup: "G", bust: 86, waist: 58, hip: 88, height: 153, genre: ["巨乳", "熟女"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 34, name: "美谷 朱音", age: 28, cup: "E", bust: 83, waist: 58, hip: 96, height: 166, genre: ["高身長", "美人"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 35, name: "渚 みつき", age: 28, cup: "B", bust: 83, waist: 58, hip: 86, height: 155, genre: ["美少女", "スレンダー"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 36, name: "姫咲 はな", age: 26, cup: "I", bust: 100, waist: 62, hip: 94, height: 156, genre: ["美少女", "爆乳"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 37, name: "月野 かすみ", age: 30, cup: "G", bust: 94, waist: 60, hip: 89, height: 158, genre: ["巨乳", "お姉さん"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 38, name: "石原 希望", age: 28, cup: "E", bust: 88, waist: 58, hip: 89, height: 161, genre: ["人気", "笑顔"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 39, name: "小日向 みゆう", age: 31, cup: "I", bust: 96, waist: 62, hip: 92, height: 152, genre: ["巨乳", "低身長"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 40, name: "椿 りか", age: 27, cup: "F", bust: 88, waist: 60, hip: 89, height: 165, genre: ["モデル", "高身長"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 41, name: "美咲 かんな", age: 29, cup: "C", bust: 82, waist: 57, hip: 83, height: 152, genre: ["美少女", "低身長"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 42, name: "尾崎 えりか", age: 29, cup: "D", bust: 85, waist: 59, hip: 88, height: 163, genre: ["スレンダー", "お姉さん"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 43, name: "宍戸 里帆", age: 33, cup: "I", bust: 98, waist: 61, hip: 88, height: 155, genre: ["巨乳", "神乳"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 44, name: "楪 カレン", age: 30, cup: "F", bust: 90, waist: 60, hip: 91, height: 168, genre: ["高身長", "モデル"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 45, name: "うんぱい", age: 30, cup: "G", bust: 92, waist: 62, hip: 90, height: 160, genre: ["巨乳", "インフルエンサー"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 46, name: "藤森 里穂", age: 28, cup: "E", bust: 86, waist: 58, hip: 87, height: 160, genre: ["美少女", "人気"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 47, name: "吉根 ゆりあ", age: 30, cup: "G", bust: 92, waist: 60, hip: 88, height: 161, genre: ["巨乳", "美人"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 48, name: "羽月 乃蒼", age: 28, cup: "C", bust: 84, waist: 58, hip: 86, height: 158, genre: ["美少女", "スレンダー"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 49, name: "美園和花", age: 23, cup: "F", bust: 86, waist: 58, hip: 88, height: 158, genre: ["美少女", "美乳"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 50, name: "瀬戸環奈", age: 21, cup: "J", bust: 101, waist: 59, hip: 91, height: 170, genre: ["美少女", "スレンダー","爆乳"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 51, name: "AIKA", age: 35, cup: "E", bust: 85, waist: 58, hip: 87, height: 163, genre: ["クール", "モデル体型"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 52, name: "夢乃あいか", age: 29, cup: "F", bust: 88, waist: 59, hip: 88, height: 158, genre: ["美乳", "お姉さん"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 53, name: "胡桃さくら", age: 27, cup: "G", bust: 90, waist: 58, hip: 86, height: 155, genre: ["巨乳", "美少女"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 54, name: "鷲尾めい", age: 24, cup: "F", bust: 86, waist: 58, hip: 85, height: 153, genre: ["美少女", "スレンダー"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 55, name: "月乃ルナ", age: 25, cup: "F", bust: 85, waist: 56, hip: 85, height: 148, genre: ["小柄", "巨乳"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 56, name: "末広純", age: 26, cup: "G", bust: 88, waist: 58, hip: 85, height: 155, genre: ["巨乳", "美肌"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 57, name: "小花のん", age: 24, cup: "D", bust: 80, waist: 53, hip: 82, height: 152, genre: ["美少女", "美脚"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 59, name: "田野憂", age: 24, cup: "F", bust: 86, waist: 58, hip: 85, height: 153, genre: ["美少女", "スレンダー"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." },
-        { id: 60, name: "奥田咲", age: 32, cup: "G", bust: 90, waist: 60, hip: 88, height: 155, genre: ["巨乳", "お姉さん"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." }
+        { id: 10, name: "河北 彩伽", age: 26, cup: "E", bust: 88, waist: 57, hip: 86, height: 169, genre: ["巨乳","人気", "美少女", "モデル"], imageURL: "https://placehold.co/400x500/e91e63/ffffff?text=Loading..." }
     ];
 
-// ==========================================
+    // ==========================================
     // 非同期でDMM APIから女優画像と公式リンクを取得する関数
     // ==========================================
     async function fetchActressImage(actressName, imgElement, linkContainerElement = null) {
